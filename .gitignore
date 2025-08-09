@@ -1,0 +1,16 @@
+cat > .gitignore <<'EOF'
+# Node & Docker junk
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment secrets
+.env*
+!*.example
+
+# Docker volumes
+directus-database
+directus-uploads
+directus-extensions
+directus-templates
+EOF
