@@ -1,35 +1,38 @@
 services:
   directus:
-    image: directus/directus:11
-    container_name: secure-directus
-    restart: unless-stopped
-    ports:
-      - "8055:8055"
+    image: 'directus/directus:11'
     volumes:
-      - directus-database:/directus/database
-      - directus-uploads:/directus/uploads
-      - directus-extensions:/directus/extensions
-      - directus-templates:/directus/templates
+      - 'directus-database:/directus/database'
+      - 'directus-uploads:/directus/uploads'
+      - 'directus-extensions:/directus/extensions'
+      - 'directus-templates:/directus/templates'
     environment:
-      KEY: ${KEY}
-      SECRET: ${SECRET}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      DB_CLIENT: ${DB_CLIENT}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      - SERVICE_FQDN_DIRECTUS_8055
+      - KEY=$SERVICE_BASE64_64_KEY
+      - SECRET=$SERVICE_BASE64_64_SECRET
+      - 'ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}'
+      - ADMIN_PASSWORD=$SERVICE_PASSWORD_ADMIN
+      - DB_CLIENT=${DB_CLIENT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - WEBSOCKETS_ENABLED=true
 
+      # CORS Settings
+      - CORS_ENABLED=true
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - CORS_METHODS=GET,POST,PATCH,DELETE
+      - CORS_ALLOWED_HEADERS=Content-Type,Authorization
+      - CORS_EXPOSED_HEADERS=Content-Range
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8055/admin/login"]
+      test:
+        - CMD
+        - wget
+        - '-q'
+        - '--spider'
+        - 'http://127.0.0.1:8055/admin/login'
       interval: 5s
       timeout: 20s
       retries: 10
-
-volumes:
-  directus-database:
-  directus-uploads:
-  directus-extensions:
-  directus-templates:
